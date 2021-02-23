@@ -1,0 +1,12 @@
+{
+    "scenes_points": {
+        "p3d_sanmiguel-view3_part6": [535, 103],
+        "p3d_staircase2-view1_part6": [416, 203],
+        "p3d_staircase-view0_part6": [236, 436],
+        "p3d_whiteroom-night-view0_part6": [134, 600]
+    },
+    "estimators": [
+        "RNN",
+        "reference"
+    ]
+}

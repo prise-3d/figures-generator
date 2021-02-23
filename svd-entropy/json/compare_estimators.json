@@ -1,0 +1,6 @@
+{
+    "estimators": [
+        "reference",
+        "mean-or-mon"
+    ]
+}

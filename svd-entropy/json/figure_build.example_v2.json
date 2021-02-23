@@ -1,0 +1,34 @@
+{
+    "estimators": [
+        "amon",
+        "mean",
+        "mean-or-mon",
+        "mon",
+        "reference"
+    ],
+    "figsize": [
+        "0.18",
+        "0.18",
+        "0.18",
+        "0.18",
+        "0.18"
+    ],
+    "scenes": [
+        "p3d_bidir",
+        "p3d_contemporary-bathroom",
+        "p3d_crown",
+        "p3d_villa-lights-on"
+    ],
+    "methods": [
+        "crop",
+        "crop",
+        "crop",
+        "crop",
+        "crop",
+        "border",
+        "border",
+        "border",
+        "border",
+        "border"
+    ]
+}

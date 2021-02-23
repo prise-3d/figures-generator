@@ -1,0 +1,15 @@
+{
+    "scenes_points": {
+        "p3d_bidir": [438, 400],
+        "p3d_contemporary-bathroom": [50, 800],
+        "p3d_crown": [320, 840],
+        "p3d_villa-lights-on": [550, 120]
+    },
+    "estimators": [
+        "reference",
+        "mean",
+        "mon",
+        "mean-or-mon",
+        "amon"
+    ]
+}

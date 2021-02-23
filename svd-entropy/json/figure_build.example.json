@@ -1,0 +1,26 @@
+{
+    "estimators": [
+        "RNN",
+        "reference",
+        "RNN",
+        "reference"
+    ],
+    "figsize": [
+        "0.23",
+        "0.23",
+        "0.23",
+        "0.23"
+    ],
+    "scenes": [
+        "p3d_sanmiguel-view3_part6",
+        "p3d_staircase2-view1_part6",
+        "p3d_staircase-view0_part6",
+        "p3d_whiteroom-night-view0_part6"
+    ],
+    "methods": [
+        "border",
+        "border",
+        "crop",
+        "crop"
+    ]
+}
