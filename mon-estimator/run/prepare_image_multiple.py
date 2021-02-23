@@ -64,8 +64,6 @@ def main():
     estimators = json_data["estimators"]
     scenes_points = json_data["scenes_points"]
 
-
-
     for est in estimators:
 
         estimator_path = os.path.join(p_folder, est)
@@ -86,7 +84,7 @@ def main():
                 # img_path = os.path.join(scene_path, img)
 
 
-            output_image_path = os.path.join(p_output, est, key + '.png')
+            output_image_path = os.path.join('data', p_output, est, key + '.png')
 
             if p_method == 'border':
                 command_border = "python mon-estimator/run/border_image.py --p1 {0} --p2 {1} --img {2} --color {3} --output {4}" \

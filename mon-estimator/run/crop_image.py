@@ -7,8 +7,6 @@ import numpy as np
 from PIL import Image
 from ipfml.processing import transform
 
-folder_output = 'data/border'
-
 def main():
     
     parser = argparse.ArgumentParser(description=" image using p1 and p2 coordinate")
@@ -30,15 +28,13 @@ def main():
     
     pil_img = pil_img.crop((p1_x, p1_y, p2_x, p2_y))
 
-    if not os.path.exists(folder_output):
-        os.makedirs(folder_output)
 
-    p_output_folder, _ = os.path.split(os.path.join(folder_output, p_output))
+    p_output_folder, _ = os.path.split(p_output)
         
     if not os.path.exists(p_output_folder):
         os.makedirs(p_output_folder)
 
-    pil_img.save(os.path.join(folder_output, p_output))
+    pil_img.save(p_output)
     
 
 if __name__ == "__main__":

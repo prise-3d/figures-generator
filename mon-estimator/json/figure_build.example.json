@@ -1,4 +1,7 @@
 {
+    "reference": "reference",
+    "prefix": "images/mon_study",
+    "metric": "rmse",
     "estimators": [
         "mean",
         "mean-or-mon",
@@ -26,15 +29,15 @@
         "p3d_villa-lights-on"
     ],
     "methods": [
-        "crop",
-        "crop",
-        "crop",
-        "crop",
-        "crop",
         "border",
         "border",
         "border",
         "border",
-        "border"
+        "border",
+        "crop",
+        "crop",
+        "crop",
+        "crop",
+        "crop"
     ]
 }

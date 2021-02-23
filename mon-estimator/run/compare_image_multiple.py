@@ -7,69 +7,77 @@ from PIL import Image
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error as rmse
 
-# {
-#     "estimators": [
-#         "MON",
-#         "reference"
-#     ]
-# }
-
 def main():
     
-    parser = argparse.ArgumentParser(description="Compare multiple image")
+    parser = argparse.ArgumentParser(description="Compare multiple image using metric on different estimators")
 
     parser.add_argument('--folder', type=str, help="data folder where images are save for each estimators", required=True)
-    parser.add_argument('--estimators', type=str, help="specific figure settings", required=True)
-    parser.add_argument('--method', type=str, help="specific comparison method to use", choices=['ssim', 'rmse'], required=True)
-    parser.add_argument('--output', type=str, required=True)
+    parser.add_argument('--json', type=str, help="json with all build figure data", required=True)
+    parser.add_argument('--output', type=str, help="output folder", required=True)
 
     args = parser.parse_args()
 
     p_folder  = args.folder
-    p_method = args.method
-    p_estimators = args.estimators
+    p_json = args.json
     p_output = args.output
 
+    # extract data from json configuration
+    json_data = None
 
-    estimators = [ e.strip() for e in p_estimators.split(',') ]
-    print(estimators)
+    with open(p_json, 'r') as json_file:
+        json_data = json.load(json_file)
 
-    # scenes = os.listdir(p_folder)
+    reference = json_data["reference"]
+    estimators = json_data["estimators"]
+    metric = json_data["metric"]
 
-    output_file = open(p_output, 'w')
+    print(f"Comparisons of {reference} with {estimators}")
 
-    output_folder, _ = os.path.split(p_output)
-    if len(output_folder) > 0 and not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    if not os.path.exists(p_output):
+        os.makedirs(p_output)
 
-    default_estimator_path = os.path.join(p_folder, estimators[0])
-
-    # expected images path have same name
-    images = os.listdir(default_estimator_path)
-
-    for img in sorted(images):
-
-        est1_path_image = os.path.join(p_folder, estimators[0], img)
-        est2_path_image = os.path.join(p_folder, estimators[1], img)
-
-        img_rgb_1 = np.array(Image.open(est1_path_image))
-        img_rgb_2 = np.array(Image.open(est2_path_image))
-
-        scene_name = img.replace('.png', '')
-
-        if p_method == 'ssim':
-            sentence = "{0};{1};{2};{3}\n".format(scene_name, img, estimators, ssim(img_rgb_1, img_rgb_2, multichannel=True))
-            output_file.write(sentence)
-
-        if p_method == 'rmse':
-            sentence = "{0};{1};{2};{3}\n".format(scene_name, img, estimators, rmse(img_rgb_1, img_rgb_2))
-            output_file.write(sentence)
-                
+    counter = 0
     
-    output_file.close()
+    for method in ["border", "crop"]:
+
+        default_estimator_path = os.path.join(p_folder, method, reference)
+
+        # expected images path have same name
+        images = os.listdir(default_estimator_path)
+
+        for est in estimators:
+
+            # prepare output filename
+            counter_str = str(counter)
+
+            while len(counter_str) < 3:
+                counter_str = "0" + counter_str
+                
+            output_filename = os.path.join(p_output, f"{counter_str}_{method}_{reference}_{est}_{metric}.csv")
+            output_file = open(output_filename, 'w')
+
+            for img in sorted(images):
+
+                est1_path_image = os.path.join(p_folder, method, reference, img)
+                est2_path_image = os.path.join(p_folder, method, est, img)
+
+                img_rgb_1 = np.array(Image.open(est1_path_image))
+                img_rgb_2 = np.array(Image.open(est2_path_image))
+
+                scene_name = img.replace('.png', '')
+
+                if metric == 'ssim':
+                    sentence = "{0};{1};{2};{3}\n".format(scene_name, img, estimators, ssim(img_rgb_1, img_rgb_2, multichannel=True))
+                    output_file.write(sentence)
+
+                if metric == 'rmse':
+                    sentence = "{0};{1};{2};{3}\n".format(scene_name, img, estimators, rmse(img_rgb_1, img_rgb_2))
+                    output_file.write(sentence)
+
+            counter += 1
+                    
+        output_file.close()
             
-
-
 
 
 if __name__ == "__main__":
