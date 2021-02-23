@@ -1,0 +1,3 @@
+rawls
+Pillow
+numpy

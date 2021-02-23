@@ -48,11 +48,7 @@ def main():
     if not os.path.exists(p_output):
         os.makedirs(p_output)
 
-    ref_rawls_images = glob.glob(f'{p_folder}/**/**/*.rawls')
-    est_rawls_images = glob.glob(f'{p_folder}/**/**/**/*.rawls')
-
-
-    rawls_images = [*ref_rawls_images, *est_rawls_images]
+    rawls_images = glob.glob(f'{p_folder}/**/**/*.rawls')
     
     for img_path in rawls_images:
 

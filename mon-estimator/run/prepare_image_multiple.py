@@ -89,13 +89,13 @@ def main():
             output_image_path = os.path.join(p_output, est, key + '.png')
 
             if p_method == 'border':
-                command_border = "python run/border_image.py --p1 {0} --p2 {1} --img {2} --color {3} --output {4}" \
+                command_border = "python mon-estimator/run/border_image.py --p1 {0} --p2 {1} --img {2} --color {3} --output {4}" \
                     .format(p1, p2, image_path, "red", output_image_path)
 
                 subprocess.call(command_border, shell=True)
 
             if p_method == 'crop':
-                command_crop = "python run/crop_image.py --p1 {0} --p2 {1} --img {2} --output {3}" \
+                command_crop = "python mon-estimator/run/crop_image.py --p1 {0} --p2 {1} --img {2} --output {3}" \
                     .format(p1, p2, image_path, output_image_path)
 
                 subprocess.call(command_crop, shell=True)
