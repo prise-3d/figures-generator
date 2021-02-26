@@ -59,13 +59,11 @@ def main():
     
     parser = argparse.ArgumentParser(description="Compute image figure as output")
 
-    parser.add_argument('--folder', type=str, help="data folder where comparisons files are available", required=True)
     parser.add_argument('--json', type=str, help="specific figure settings", required=True)
     parser.add_argument('--output', type=str, required=True)
 
     args = parser.parse_args()
 
-    p_folder = args.folder
     p_json = args.json
     p_output = args.output
 
@@ -75,6 +73,8 @@ def main():
 
     with open(p_json, 'r') as json_file:
         json_data = json.load(json_file)
+
+    p_folder = os.path.join(json_data['output'], json_data['nsamples'], 'metrics')
 
     comparisons = []
     comparisons_data = sorted(os.listdir(p_folder))
@@ -109,17 +109,17 @@ def main():
             # 3 => estimator
             # 4 => image_path
             # 5 => score
-            output_f.write(figure_str.format(figsize, json_data["prefix"], method, est, img_name, json_data["metric"].upper(), score))
+            output_f.write(figure_str.format(figsize, os.path.join(json_data['output'], json_data['nsamples'], 'processing'), method, est, img_name, json_data["metric"].upper(), score))
 
         if id_scene < len(json_data["scenes"]) - 1:
             output_f.write("\n\\vspace{2mm}\n~\n\n")
 
     output_f.write("\n\\vspace{5mm}\hrulefill\n~\n\n")
 
-    for index, est in enumerate(json_data["estimators"]):
+    for index, est in enumerate(json_data["displays"]):
 
         figsize = json_data["figsize"][index]
-        output_f.write(end_str.format(figsize, est.capitalize()))
+        output_f.write(end_str.format(figsize, est))
 
 
 

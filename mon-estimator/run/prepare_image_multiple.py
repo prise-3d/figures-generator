@@ -44,16 +44,12 @@ def main():
     
     parser = argparse.ArgumentParser(description="Add multiple border image using dictionnary")
 
-    parser.add_argument('--folder', type=str, help="data folder where images are save for each estimators", required=True)
     parser.add_argument('--json', type=str, help="specific figure settings", required=True)
     parser.add_argument('--method', type=str, help="specific script to use", choices=['crop', 'border'], required=True)
-    parser.add_argument('--output', type=str, required=True)
 
     args = parser.parse_args()
 
-    p_folder  = args.folder
     p_method = args.method
-    p_output = args.output
     p_json = args.json
 
     json_data = None
@@ -63,6 +59,8 @@ def main():
 
     estimators = json_data["estimators"]
     scenes_points = json_data["scenes_points"]
+
+    p_folder = os.path.join(json_data['output'], json_data['nsamples'], 'png')
 
     for est in estimators:
 
@@ -84,7 +82,7 @@ def main():
                 # img_path = os.path.join(scene_path, img)
 
 
-            output_image_path = os.path.join('data', p_output, est, key + '.png')
+            output_image_path = os.path.join(json_data['output'], json_data['nsamples'], 'processing', p_method, est, key + '.png')
 
             if p_method == 'border':
                 command_border = "python mon-estimator/run/border_image.py --p1 {0} --p2 {1} --img {2} --color {3} --output {4}" \

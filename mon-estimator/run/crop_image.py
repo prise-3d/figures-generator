@@ -23,6 +23,9 @@ def main():
     p_img    = args.img
     p_output = args.output
 
+    if os.path.exists(p_output):
+        exit(1)
+
     # open image
     pil_img = Image.open(p_img)
     

@@ -1,13 +1,21 @@
 {
     "reference": "reference",
-    "prefix": "images/mon_study",
+    "nsamples": "10000",
+    "output": "data/images/mon_study",
     "metric": "rmse",
     "estimators": [
-        "mean",
         "mean-or-mon",
         "mon",
         "amon",
+	    "aamon",
         "reference"
+    ],
+    "displays": [
+        "Mean-or-MoN",
+        "MoN",
+        "$\\alpha$-MoN \\\\ ($\\alpha = 0.5$)",
+	    "Auto $\\alpha$-MoN",
+        "Reference"
     ],
     "scenes_points": {
         "p3d_bidir": [438, 400],
@@ -29,11 +37,6 @@
         "p3d_villa-lights-on"
     ],
     "methods": [
-        "border",
-        "border",
-        "border",
-        "border",
-        "border",
         "crop",
         "crop",
         "crop",

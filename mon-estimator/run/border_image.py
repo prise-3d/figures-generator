@@ -36,6 +36,9 @@ def main():
     p_color  = args.color
     p_output = args.output
 
+    if os.path.exists(p_output):
+        exit(1)
+
     # open image
     img_arr = np.array(Image.open(p_img))
 

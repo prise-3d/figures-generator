@@ -11,15 +11,11 @@ def main():
     
     parser = argparse.ArgumentParser(description="Compare multiple image using metric on different estimators")
 
-    parser.add_argument('--folder', type=str, help="data folder where images are save for each estimators", required=True)
     parser.add_argument('--json', type=str, help="json with all build figure data", required=True)
-    parser.add_argument('--output', type=str, help="output folder", required=True)
 
     args = parser.parse_args()
 
-    p_folder  = args.folder
     p_json = args.json
-    p_output = args.output
 
     # extract data from json configuration
     json_data = None
@@ -30,6 +26,9 @@ def main():
     reference = json_data["reference"]
     estimators = json_data["estimators"]
     metric = json_data["metric"]
+
+    p_folder = os.path.join(json_data['output'], json_data['nsamples'], 'processing')
+    p_output = os.path.join(json_data['output'], json_data['nsamples'], 'metrics')
 
     print(f"Comparisons of {reference} with {estimators}")
 

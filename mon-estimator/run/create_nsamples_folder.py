@@ -5,7 +5,9 @@ import numpy as np
 from PIL import Image
 from rawls.rawls import Rawls
 
+import json
 import glob
+import shutil
 
 # TODO:check if required to update the extract_nsamples for rawls
 def extract_nsamples(img_path):
@@ -38,29 +40,43 @@ def main():
     parser = argparse.ArgumentParser(description="Convert to expected png format")
 
     parser.add_argument('--folder', type=str, help='folder path with all estimator data', required=True)
-    parser.add_argument('--output', type=str, help='output prediction file', required=True)
+    parser.add_argument('--json', type=str, help='Expected current configuration', required=True)
 
     args = parser.parse_args()
 
     p_folder  = args.folder
-    p_output  = args.output
+    p_json = args.json
 
-    if not os.path.exists(p_output):
-        os.makedirs(p_output)
+    json_data = None
 
-    rawls_images = glob.glob(f'{p_folder}/**/**/*.rawls')
+    with open(p_json, 'r') as json_file:
+        json_data = json.load(json_file)
+
+    nsamples = int(json_data['nsamples'])
+    reference = json_data['reference']
+    output = os.path.join(json_data['output'], json_data['nsamples'], 'png')
+
+    if not os.path.exists(output):
+        os.makedirs(output)
+
+    estimators_path = [ p for p in glob.glob(f'{p_folder}/**/**/*.png') if extract_nsamples(p) == nsamples ]
+
+    reference_path = glob.glob(f'{p_folder}/{reference}/**/*.png')
+
+    # construct output estimator
+    estimators_full_path = list(set(estimators_path) | set(reference_path)) 
     
-    for img_path in rawls_images:
+    for img_path in sorted(estimators_full_path):
 
-        output_image_path = img_path.replace(p_folder, p_output).replace('.rawls', '.png')
-        output_image_folder, image_name = os.path.split(output_image_path)
+        output_image_path = img_path.replace(p_folder, output)
+        output_image_folder, _ = os.path.split(output_image_path)
 
         if not os.path.exists(output_image_folder):
             os.makedirs(output_image_folder)
 
         if not os.path.exists(output_image_path):
-            print(f'Convert .rawls image into `{image_name}`')
-            Rawls.load(img_path).save(output_image_path)
+            print(f'Copy `{img_path}` image into {output}')
+            shutil.copy2(img_path, output_image_path)
     
 
 if __name__ == "__main__":
