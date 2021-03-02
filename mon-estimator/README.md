@@ -30,10 +30,10 @@ python mon-estimator/run/convert_to_png.py --folder <rawls-images-folder> --outp
 ### Prepare all images
 
 ```bash
-python mon-estimator/run/prepare_image_multiple.py --folder <png-images-folder> --json <figure_build.json> --method <crop | border> --output <prepared-images-folder>/<method>
+python mon-estimator/run/prepare_image_multiple.py --json <figure_build.json> --method <crop | border>
 ```
 
-- `<figure_build.json>`: example is available into [json](json/figure_build.json) folder.
+- `<figure_build.json>`: example is available into [json](json/figure_build.example.json) folder.
 
 **Note:** generated image data will be saved into `data` default folder.
 
@@ -41,7 +41,7 @@ python mon-estimator/run/prepare_image_multiple.py --folder <png-images-folder> 
 
 Compare the generated folder into `.csv` files:
 ```bash
-python mon-estimator/run/compare_image_multiple.py --folder <prepared-images-folder> --json <figure_build.json> --metric <metric> --output <output-metrics-folder>
+python mon-estimator/run/compare_image_multiple.py --json <figure_build.json>
 ```
 
 ### Build LaTeX figure
@@ -49,7 +49,7 @@ python mon-estimator/run/compare_image_multiple.py --folder <prepared-images-fol
 Then build the figure:
 
 ```bash
-python mon-estimator/run/build_figure.py --folder <output-metrics> --prefix <prefix> --json <figure_build.json> --output <generated-figure.tex>
+python mon-estimator/run/build_figure.py --json <figure_build.json> --output data/<generated-figure.tex>
 ```
 
 ## Prepare all data
