@@ -4,7 +4,7 @@ import argparse
 import numpy as np
 from PIL import Image
 from skimage.metrics import structural_similarity as ssim
-from skimage.metrics import mean_squared_error as rmse
+from skimage.metrics import mean_squared_error as mse
 
 def write_progress(progress):
     '''
@@ -26,14 +26,21 @@ def write_progress(progress):
     print(output_str)
     sys.stdout.write("\033[F")
 
+
+def rmse(image, ref):
+    return np.sqrt(((image - ref) ** 2).mean())
+
 def compare_image(metric, ref, image):
 
     error = None
     if metric == 'ssim':
-        error = ssim(ref, image, multichannel=True)
+        error = ssim(image, ref, multichannel=True)
+
+    if metric == 'mse':
+        error = mse(image, ref)
 
     if metric == 'rmse':
-        error = rmse(ref, image)
+        error = rmse(image, ref)
 
     return error
 
