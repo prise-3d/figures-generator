@@ -106,7 +106,7 @@ def main():
                 counter += 1
                 write_progress((counter + 1) / nimages)
 
-            f.write(data_line)
+            f.write(data_line + '\n')
 
     f.close()
 
