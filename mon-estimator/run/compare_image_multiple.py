@@ -5,7 +5,14 @@ import argparse
 import numpy as np
 from PIL import Image
 from skimage.metrics import structural_similarity as ssim
-from skimage.metrics import mean_squared_error as rmse
+from skimage.metrics import mean_squared_error as mse
+from skimage.metrics import peak_signal_noise_ratio as psnr
+
+def rmse(image, ref):
+    return np.sqrt(((image - ref) ** 2).mean())
+
+def firefly_error(image, ref):
+    return np.max(image - ref).mean()
 
 def main():
     
@@ -67,11 +74,27 @@ def main():
             scene_name = img.replace('.png', '')
 
             if metric == 'ssim':
-                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, estimators, ssim(img_rgb_1, img_rgb_2, multichannel=True))
+                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, ssim(img_rgb_1, img_rgb_2, multichannel=True))
                 output_file.write(sentence)
 
             if metric == 'rmse':
-                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, estimators, rmse(img_rgb_1, img_rgb_2))
+                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, rmse(img_rgb_1, img_rgb_2))
+                output_file.write(sentence)
+
+            if metric == 'mse':
+                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, mse(img_rgb_1, img_rgb_2))
+                output_file.write(sentence)
+
+            if metric == 'psnr':
+                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, psnr(img_rgb_1, img_rgb_2))
+                output_file.write(sentence)
+
+            if metric == 'rmse_ssim':
+                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, rmse(img_rgb_1, img_rgb_2) / ssim(img_rgb_1, img_rgb_2, multichannel=True))
+                output_file.write(sentence)
+
+            if metric == 'firefly':
+                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, firefly_error(img_rgb_1, img_rgb_2))
                 output_file.write(sentence)
 
         counter += 1

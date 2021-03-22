@@ -52,7 +52,7 @@ import uuid
 # 3 => estimator
 # 4 => image_path
 # 5 => score
-figure_str = "\\begin{{subfigure}}[t]{{{0}\\textwidth}}\n\t\centering\n\t\includegraphics[width=\\textwidth]{{{1}}}\n\t\\footnotesize{{{2}: {3:.2f}}}\n\end{{subfigure}}\n"
+figure_str = "\\begin{{subfigure}}[t]{{{0}\\textwidth}}\n\t\centering\n\t\includegraphics[width=\\textwidth]{{{1}}}\n\t\\footnotesize{{{2}: {3:.4f}}}\n\end{{subfigure}}\n"
 
 end_str = "\\begin{{subfigure}}[t]{{{0}\\textwidth}}\n\t\centering\n\t{1}\n\end{{subfigure}}\n"
 

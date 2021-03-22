@@ -69,12 +69,12 @@ def main():
 
     print('Load of reference images')
     reference_images = {}
-    for scene in sorted(os.listdir(reference)):
-        scene_path = os.path.join(reference, scene)
-        image_name = os.listdir(scene_path)[0]
+    for ref_scene in sorted(os.listdir(reference)):
+        ref_scene_path = os.path.join(reference, ref_scene)
+        image_name = os.listdir(ref_scene_path)[0]
 
-        image_path = os.path.join(scene_path, image_name)
-        reference_images[scene] = np.array(Image.open(image_path))
+        image_path = os.path.join(ref_scene_path, image_name)
+        reference_images[ref_scene] = np.array(Image.open(image_path))
 
     print('For each estimator start to compare each scene')
     for est in sorted(os.listdir(estimators)):
@@ -97,14 +97,14 @@ def main():
             if scene not in reference_images:
                 print(f'{scene} data not available for reference')
 
-            for img in scene_images:
+            for img in sorted(scene_images):
 
                 # open image data
                 img_path = os.path.join(scene_path, img)
                 img_data = np.array(Image.open(img_path))
 
                 # compare image
-                current_error = compare_image(metric, reference_images[scene], img_data)
+                current_error = compare_image(metric, img_data, reference_images[scene])
 
                 # save data into line
                 data_line += f';{current_error}'
