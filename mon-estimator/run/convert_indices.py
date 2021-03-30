@@ -49,7 +49,7 @@ def main():
     
     for estimator in sorted(os.listdir(p_folder)):
 
-        estimator_path = os.listdir(p_folder, estimator)
+        estimator_path = os.path.join(p_folder, estimator)
 
         for scene in sorted(os.listdir(estimator_path)):
 
