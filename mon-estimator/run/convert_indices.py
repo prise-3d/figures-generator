@@ -55,7 +55,7 @@ def main():
 
             scene_path = os.path.join(estimator_path, scene)
 
-            output_scene_path = os.path.join(p_output, estimator_path, scene)
+            output_scene_path = os.path.join(p_output, estimator, scene)
 
             if not os.path.exists(output_scene_path):
                 os.makedirs(output_scene_path)
