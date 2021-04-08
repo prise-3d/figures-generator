@@ -4,7 +4,7 @@ import argparse
 import subprocess
 import operator
 
-opposite_point = 50, 50
+opposite_point = 100, 100
 
 # scenes_points = {
 #     "living-room-3-view0": (950, 338),
@@ -86,7 +86,7 @@ def main():
 
             if p_method == 'border':
                 command_border = "python mon-estimator/run/border_image.py --p1 {0} --p2 {1} --img {2} --color {3} --output {4}" \
-                    .format(p1, p2, image_path, "red", output_image_path)
+                    .format(p1, p2, image_path, "lightblue", output_image_path)
 
                 subprocess.call(command_border, shell=True)
 

@@ -50,6 +50,8 @@ def main():
     first_header_line += "\\\\\n"
     f.write(first_header_line)
 
+    mean_values = [] # keep same values for mean
+
     # display for each M and estimator a specific line
     for m in M:
         
@@ -68,29 +70,43 @@ def main():
     
                 row = scene_df.iloc[0]
                 ssim_values[i].append(row[201])    
+
+                if labels[i] == 'Mean' and len(mean_values) < len(scenes):
+                    mean_values.append(row[201])
         
         # get max expected value
         max_scene_ssim = {}
         scene_ssim = {}
 
-        for _, arr in ssim_values.items():
+        for key, arr in ssim_values.items():
+
+            current_values = arr
+
+            if labels[key] == 'Mean':
+                current_values = mean_values
             
             for s_index, scene in enumerate(scenes):
                 
                 if scene not in max_scene_ssim:
-                    max_scene_ssim[scene] = arr[s_index]
-                elif max_scene_ssim[scene] < arr[s_index]:
-                    max_scene_ssim[scene] = arr[s_index]
+                    max_scene_ssim[scene] = current_values[s_index]
+                elif max_scene_ssim[scene] < current_values[s_index]:
+                    max_scene_ssim[scene] = current_values[s_index]
                 
                 if scene not in scene_ssim:
-                    scene_ssim[scene] = [arr[s_index]]
+                    scene_ssim[scene] = [current_values[s_index]]
                 else:
-                    scene_ssim[scene].append(arr[s_index])
+                    scene_ssim[scene].append(current_values[s_index])
 
         # write lines
         counter = 0
         for key, arr in ssim_values.items():
             
+            current_values = arr
+
+            if labels[key] == 'Mean':
+                current_values = mean_values
+
+
             line = ""
 
             if counter == 0:
@@ -107,7 +123,7 @@ def main():
                 index = [seq.index(v) for v in scene_ssim[scene]]
                 
                 reduced_max = float(f'{max_scene_ssim[scene]:.5f}')
-                reduced_current = float(f'{arr[s_index]:.5f}')
+                reduced_current = float(f'{current_values[s_index]:.5f}')
 
                 if reduced_max == reduced_current:
                     line += f" & \\textbf{{{reduced_current:.5f}}} ({index[counter]+1})"

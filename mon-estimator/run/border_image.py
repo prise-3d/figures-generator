@@ -17,6 +17,12 @@ def get_color(color):
 
     if color == 'blue':
         return np.array([0, 0, 255])
+    
+    if color == 'yellow':
+        return np.array([255, 204, 0])
+
+    if color == 'lightblue':
+        return np.array([0, 153, 255])
 
 def main():
     
@@ -25,7 +31,7 @@ def main():
     parser.add_argument('--p1', type=str, help='x coordinate', default='200,800', required=True)
     parser.add_argument('--p2', type=str, help='y coordinare', default='200,800', required=True)
     parser.add_argument('--img', type=str, help='image where to insert border', required=True)
-    parser.add_argument('--color', type=str, choices=['red', 'green', 'blue'], default='red')
+    parser.add_argument('--color', type=str, choices=['red', 'green', 'blue', 'lightblue', 'yellow'], default='blue')
     parser.add_argument('--output', type=str, required=True)
 
     args = parser.parse_args()
