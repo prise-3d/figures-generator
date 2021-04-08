@@ -347,7 +347,7 @@ def main():
                     
                     cumul_metric_text[i] += f'\t\\begin{{minipage}}{{{expected_right_part_size}\\textwidth}}\n'
                     cumul_metric_text[i] += f'\t\t\\centering\n'
-                    cumul_metric_text[i] += f'\t\t\\vspace{{-1.2mm}}\n'
+                    #cumul_metric_text[i] += f'\t\t\\vspace{{-1.2mm}}\n'
                     cumul_metric_text[i] += f'\t\t\\footnotesize{{\\textbf{{{expected_metric.upper()}:}} {method_object[i]["metric"]:.4f}}}\n'
                     cumul_metric_text[i] += f'\t\\end{{minipage}}\n'
 

@@ -1,0 +1,96 @@
+{
+    "reference": "reference",
+    "nsamples": "100000",
+    "metric": "ssim",
+    "estimators": [
+        "comparisons-M21-gini-dmon",
+        "reference",
+        "comparisons-M21-mean",
+        "comparisons-M21-mon",
+	    "comparisons-M21-gini-binary-mon",
+	    "comparisons-M21-gini-dmon",
+        "reference"
+    ],
+    "displays": [
+        "$D$-MON",
+        "Reference",
+        "Mean",
+        "MON",
+        "$G$-MON$_b$",
+        "$D$-MON",
+        "Reference"
+    ],
+    "scenes": {
+        "p3d_bidir": { 
+            "crops": [
+                [438, 400],
+                [300, 200]
+            ], 
+            "colors": [
+                "lightblue",
+                "yellow"
+            ],
+            "opposite": 80,
+            "resize": [800, 800]
+        },
+        "p3d_contemporary-bathroom": { 
+            "crops": [
+                [50, 800],
+                [200, 500]
+            ], 
+            "colors": [
+                "lightblue",
+                "yellow"
+            ],
+            "opposite": 120,
+            "resize": [1200, 1200]
+        },
+        "p3d_crown":  { 
+            "crops": [
+                [320, 840],
+                [500, 440]
+            ], 
+            "colors": [
+                "lightblue",
+                "yellow"
+            ],
+            "opposite": 100,
+            "resize": [1000, 1100]
+        },
+        "p3d_villa-lights-on": { 
+            "crops": [
+                [320, 220],
+                [100, 300]
+            ], 
+            "colors": [
+                "lightblue",
+                "yellow"
+            ],
+            "opposite": 50,
+            "resize": [444, 444]
+        }
+    },
+    "rightpart": {
+        "width": 0.52,
+        "detect": "crop",
+        "size": 0.18
+    },
+    "figsize": [
+        "0.23",
+        "0.23",
+        "0.08",
+        "0.08",
+        "0.08",
+        "0.08",
+        "0.08"
+    ],
+    "methods": [
+        "border",
+        "border",
+        "crop",
+        "crop",
+        "crop",
+        "crop",
+        "crop"
+    ]
+}
