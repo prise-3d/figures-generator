@@ -123,16 +123,17 @@ def main():
 
     # Store all scenes data in dictionnary
     comparisons_data = {}
+    references_data = {} # need to store img_data and crop of reference here
 
     # store usefull information for each
     for scene in expected_scenes:
         comparisons_data[scene] = {}
 
-    print(f'1. Extracted data from {p_output} using {p_json} configuration...')
+    print(f'1. Extraction of data from `{p_output}` using {p_json} configuration...')
 
     for scene in expected_scenes:
 
-        for est in expected_estimators:
+        for e_i, est in enumerate(expected_estimators):
             scene_path = os.path.join(p_input, est, scene)
 
             if not os.path.exists(scene_path):
@@ -140,11 +141,11 @@ def main():
                 return
 
             # indicate here what will be store into estimator
-            comparisons_data[scene][est] = {
+            comparisons_data[scene][e_i] = {
                 'real_path': None,
                 'img_data': None,
                 'cropped_data': None,
-                'methods': [] # here we store each method data
+                'methods': {} # here we store each method data
             }
 
             img_path = None
@@ -154,95 +155,100 @@ def main():
             else:
                 img_path = os.path.join(scene_path, [ img for img in os.listdir(scene_path) if extract_nsamples(img) == expected_samples ][0])
             
-            comparisons_data[scene][est]['real_path'] = img_path
+            comparisons_data[scene][e_i]['real_path'] = img_path
 
             img_data = np.array(Image.open(img_path))
-            comparisons_data[scene][est]['img_data'] = img_data
+            comparisons_data[scene][e_i]['img_data'] = img_data
 
             # 1. Crop all desired images from center
             w, h = json_data['scenes'][scene]['resize']
 
             # get center of image
             cropped_img = extract_center(img_data, w, h)
-            comparisons_data[scene][est]['cropped_data'] = cropped_img
+            comparisons_data[scene][e_i]['cropped_data'] = cropped_img
 
 
     # 2. Generate border and cropped images
     print(f'2. Extraction of expected image and crop part')
-    for m_i, method in enumerate(expected_methods):
 
-        for scene in expected_scenes:
+    for scene in expected_scenes:
 
-            print(f'-- Process method {m_i + 1} of {len(expected_methods)} of scene `{scene}`')
+        print(f'-- Process methods for scene `{scene}`')
+        
+        scene_config = expected_scenes_config[scene]
+
+        # get opposite point
+        opposite = scene_config['opposite']
+        opposite_point = opposite, opposite
+        
+        for e_i, est in enumerate(expected_estimators):
+
+            current_data = comparisons_data[scene][e_i]['cropped_data']
+            method = expected_methods[e_i]
             
-            scene_config = expected_scenes_config[scene]
+            # create border image data
+            if method == 'border':
 
-            # get opposite point
-            opposite = scene_config['opposite']
-            opposite_point = opposite, opposite
-            
-            for est in expected_estimators:
+                border_data = current_data.copy()
 
-                current_data = comparisons_data[scene][est]['cropped_data']
-                
+                for i, p in enumerate(scene_config['crops']):
+                    
+                    
+                    p1 = list(map(int, p))
+                    p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
+
+                    border_data = add_border(border_data, p1, p2, scene_config['colors'][i], 3)
+
+                # save border data image
+                output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
+                Image.fromarray(border_data).save(output_img)
+
+                method_obj = { 
+                    'img_data': current_data,
+                    'color_data': border_data,
+                    'img_path': output_img,
+                    'metric': None
+                }
+
+            # create cropped image data with border or not
+            if method == 'crop':
+
                 method_obj = {}
 
-                # create border image data
-                if method == 'border':
+                for i, p in enumerate(scene_config['crops']):
+                    
+                    crop_data = current_data.copy()
 
-                    border_data = current_data.copy()
+                    p1 = list(map(int, p))
+                    p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
 
-                    for i, p in enumerate(scene_config['crops']):
-                        
-                        
-                        p1 = list(map(int, p))
-                        p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
+                    crop_data = extract_zone(crop_data, p1, p2)
 
-                        border_data = add_border(border_data, p1, p2, scene_config['colors'][i], 3)
+                    opposite_point_reduced = opposite - 3, opposite - 3
+                    color_data = add_border(crop_data, (0, 0), opposite_point_reduced, scene_config['colors'][i], 3)
 
-                    # save border data image
+                    # save color data image
                     output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
-                    Image.fromarray(border_data).save(output_img)
+                    Image.fromarray(color_data).save(output_img)
 
-                    method_obj = { 
-                        'img_data': current_data,
-                        'color_data': border_data,
+                    crop_obj = {
+                        'img_data': crop_data,
+                        'color_data': color_data,
                         'img_path': output_img,
                         'metric': None
                     }
 
-                # create cropped image data with border or not
-                if method == 'crop':
+                    method_obj[i] = crop_obj
 
-                    method_obj = []
+            # build reference data (TODO : improve)
+            if expected_reference == est and scene not in references_data:
+                references_data[scene] = {}
 
-                    for i, p in enumerate(scene_config['crops']):
-                        
-                        crop_data = current_data.copy()
+            if expected_reference == est and method not in references_data[scene]:
+                references_data[scene][method] = method_obj
 
-                        p1 = list(map(int, p))
-                        p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
-
-                        crop_data = extract_zone(crop_data, p1, p2)
-
-                        opposite_point_reduced = opposite - 3, opposite - 3
-                        color_data = add_border(crop_data, (0, 0), opposite_point_reduced, scene_config['colors'][i], 3)
-
-                        # save color data image
-                        output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
-                        Image.fromarray(color_data).save(output_img)
-
-                        crop_obj = {
-                            'img_data': crop_data,
-                            'color_data': color_data,
-                            'img_path': output_img,
-                            'metric': None
-                        }
-
-                        method_obj.append(crop_obj)
-
-                # add method obj inside estimator data
-                comparisons_data[scene][est]['methods'].append(method_obj)
+            # add method obj inside estimator data
+            comparisons_data[scene][e_i]['method'] = method_obj
                     
     # 3. Compare border and cropped images with metrics
     print(f'3. Comparison of all estimators to {expected_reference} using {expected_metric}')
@@ -250,33 +256,56 @@ def main():
     for scene in expected_scenes:
         
         scene_config = expected_scenes_config[scene]
+        print(f'-- Process comparisons for scene `{scene}`')
         
         for e_i, est in enumerate(expected_estimators):
             
-            print(f'-- Process esttimator {e_i + 1} of {len(expected_estimators)} of scene `{scene}`')
+            method = expected_methods[e_i]
 
-            methods_ref = comparisons_data[scene][expected_reference]['methods']
-            current_data = comparisons_data[scene][est]['cropped_data']
-            methods_object = comparisons_data[scene][est]['methods']
+            methods_ref =  references_data[scene][method]
+            methods_object = comparisons_data[scene][e_i]['method']
 
-            for m_index, method in enumerate(expected_methods):
+            if method == 'border':
                 
-                if method == 'border':
-                    metric = compare_image(expected_metric, methods_ref[m_index], methods_object[m_index])
-                    methods_object[m_index]['metric'] = metric
-                
-                if method == 'crop':
+                metric = compare_image(expected_metric, methods_ref['img_data'], methods_object['img_data'])
+                methods_object['metric'] = metric
+            
+            if method == 'crop':
 
-                    for i, p in enumerate(scene_config['crops']):
-                        current = methods_object[m_index][i]
-                        ref = methods_ref[m_index][i]
+                for i, p in enumerate(scene_config['crops']):
+                    current = methods_object[i]['img_data']
+                    ref = methods_ref[i]['img_data']
 
-                        metric = compare_image(expected_metric, ref, current)
-                        methods_object[m_index][i]['metric'] = metric
+                    metric = compare_image(expected_metric, ref, current)
+                    methods_object[i]['metric'] = metric
 
 
     # 6. Create expected output LaTeX figure using specific images path
+    f = open(os.path.join(p_output, 'output.tex'), 'w')
 
+    # 6.1: Create latex header
+    for e_i, est in enumerate(expected_displays):
+
+        f.write(f'\\begin{{subfigure}}[b]{{{expected_figsize[e_i]}\\textwidth}}\n')
+        f.write(f'\t\\centering\n')
+        f.write(f'\t{est}\n')
+        f.write(f'\t\\centering\n')
+        f.write(f'\\end{{subfigure}}')
+        
+    f.write(f'~\n')
+    f.write(f'\\vspace{{3mm}}\\hrulefill\n')
+
+    # 6.2: Prepare data depending of border or crop for each scene and estimator
+    for scene in expected_scenes:
+
+        scene_config = expected_scenes_config[scene]
+
+        f.write(f'%{scene}\n')
+        
+        for e_i, est in enumerate(expected_estimators):
+            pass
+
+        
 
 
 
