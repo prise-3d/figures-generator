@@ -120,6 +120,9 @@ def main():
     expected_figsize = json_data['figsize']
     expected_displays = json_data['displays']
     expected_methods = json_data['methods']
+    expected_right_part_width = json_data['rightpart']['width']
+    expected_right_part_size = json_data['rightpart']['size']
+    expected_right_part_detect = json_data['rightpart']['detect']
 
     # Store all scenes data in dictionnary
     comparisons_data = {}
@@ -262,48 +265,106 @@ def main():
             
             method = expected_methods[e_i]
 
-            methods_ref =  references_data[scene][method]
-            methods_object = comparisons_data[scene][e_i]['method']
+            method_ref =  references_data[scene][method]
+            method_object = comparisons_data[scene][e_i]['method']
 
             if method == 'border':
                 
-                metric = compare_image(expected_metric, methods_ref['img_data'], methods_object['img_data'])
-                methods_object['metric'] = metric
+                metric = compare_image(expected_metric, method_ref['img_data'], method_object['img_data'])
+                method_object['metric'] = metric
             
             if method == 'crop':
 
                 for i, p in enumerate(scene_config['crops']):
-                    current = methods_object[i]['img_data']
-                    ref = methods_ref[i]['img_data']
+                    current = method_object[i]['img_data']
+                    ref = method_ref[i]['img_data']
 
                     metric = compare_image(expected_metric, ref, current)
-                    methods_object[i]['metric'] = metric
+                    method_object[i]['metric'] = metric
 
 
-    # 6. Create expected output LaTeX figure using specific images path
-    f = open(os.path.join(p_output, 'output.tex'), 'w')
+    # 4. Create expected output LaTeX figure using specific images path
+    output_filename = os.path.join(p_output, 'output.tex')
+    print(f'4. Write into LaTeX file {output_filename}')
+    f = open(output_filename, 'w')
 
-    # 6.1: Create latex header
+    # 4.1: Create latex header
     for e_i, est in enumerate(expected_displays):
 
         f.write(f'\\begin{{subfigure}}[b]{{{expected_figsize[e_i]}\\textwidth}}\n')
         f.write(f'\t\\centering\n')
         f.write(f'\t{est}\n')
-        f.write(f'\t\\centering\n')
-        f.write(f'\\end{{subfigure}}')
-        
-    f.write(f'~\n')
-    f.write(f'\\vspace{{3mm}}\\hrulefill\n')
+        f.write(f'\\end{{subfigure}}\n')
 
-    # 6.2: Prepare data depending of border or crop for each scene and estimator
+        if e_i < len(expected_displays) - 1:
+            f.write(f'~\n')
+        
+    f.write(f'\n~\n')
+    f.write(f'\\vspace{{3mm}}\\hrulefill\n\n')
+
+    # 4.2: Prepare data depending of border or crop for each scene and estimator
     for scene in expected_scenes:
 
         scene_config = expected_scenes_config[scene]
 
         f.write(f'%{scene}\n')
+
+        right_part = False
+        cumul_img_text = {}
+        cumul_metric_text = {}
         
         for e_i, est in enumerate(expected_estimators):
-            pass
+            
+            method = expected_methods[e_i]
+
+            method_object = comparisons_data[scene][e_i]['method']
+
+            if method == expected_right_part_detect and right_part == False:
+                right_part = True
+                f.write(f'\\begin{{subfigure}}[b]{{{expected_right_part_width}\\textwidth}}\n')
+                f.write(f'\t\\centering\n')
+
+            if method == 'border':
+                f.write(f'\\begin{{subfigure}}[b]{{{expected_figsize[e_i]}\\textwidth}}\n')
+                f.write(f'\t\\centering\n')
+                f.write(f'\t\\includegraphics[width=\\textwidth]{{{method_object["img_path"]}}}\n')
+                f.write(f'\t\\vspace{{0.8mm}}\n')
+                f.write(f'\t\\footnotesize{{\\textbf{{{expected_metric.upper()}:}} {method_object["metric"]:.4f}}}\n')
+                f.write(f'\\end{{subfigure}}\n')
+
+            # here default crop part
+            if method == expected_right_part_detect:
+
+                for i, p in enumerate(scene_config['crops']):
+
+                    if i not in cumul_img_text:
+                        cumul_img_text[i] = ''
+
+                    if i not in cumul_metric_text:
+                        cumul_metric_text[i] = ''
+
+                    cumul_img_text[i] += f'\t\\includegraphics[width={expected_right_part_size}\\textwidth]{{{method_object[i]["img_path"]}}}\n'
+                    
+                    cumul_metric_text[i] += f'\t\\begin{{minipage}}{{{expected_right_part_size}\\textwidth}}\n'
+                    cumul_metric_text[i] += f'\t\t\\centering\n'
+                    cumul_metric_text[i] += f'\t\t\\vspace{{-1.2mm}}\n'
+                    cumul_metric_text[i] += f'\t\t\\footnotesize{{\\textbf{{{expected_metric.upper()}:}} {method_object[i]["metric"]:.4f}}}\n'
+                    cumul_metric_text[i] += f'\t\\end{{minipage}}\n'
+
+        # now we write right part of figure
+        for i, k in enumerate(cumul_img_text):
+
+            f.write(cumul_img_text[k])
+            f.write(cumul_metric_text[k])
+
+            if i < len(cumul_metric_text.keys()) - 1:
+                f.write('\t\\\\[2mm]\n')
+
+        # 4.3 end figure
+        f.write(f'\\end{{subfigure}}\n\n')
+
+    print(f'Generation is done...')
+
 
         
 
