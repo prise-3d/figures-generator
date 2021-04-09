@@ -1,24 +1,14 @@
 {
     "reference": "reference",
-    "nsamples": "50000",
+    "nsamples": "100000",
     "metric": "ssim",
     "estimators": [
-        "comparisons-M21-gini-dmon",
-        "reference",
         "comparisons-M21-mean",
-        "comparisons-M21-mon",
-	    "comparisons-M21-gini-binary-mon",
-	    "comparisons-M21-gini-dmon",
-        "reference"
+        "comparisons-M21-gini-dmon"
     ],
     "displays": [
-        "$D$-MON",
-        "Reference",
         "Mean",
-        "MON",
-        "$G$-MON$_b$",
-        "$D$-MON",
-        "Reference"
+        "$G$-MON"
     ],
     "labels": [
         "Bidir",
@@ -27,8 +17,7 @@
         "Villa"
     ],
     "availables": [
-        "p3d_bidir",
-        "p3d_contemporary-bathroom"
+        "p3d_villa-lights-on"
     ],
     "scenes": {
         "p3d_bidir": { 
@@ -73,38 +62,31 @@
         "p3d_villa-lights-on": { 
             "crops": [
                 [320, 220],
-                [100, 300]
+                [500, 350],
+                [550, 30]
             ], 
             "colors": [
                 "lightblue",
-                "yellow"
+                "yellow",
+                "red"
             ],
-            "opposite": 50,
-            "resize": [444, 444],
+            "border_size": 2,
+            "opposite": 80,
+            "resize": [750, 444],
             "center": [500, 222]
         }
     },
     "rightpart": {
-        "width": 0.52,
+        "width": 0.34,
         "detect": "crop",
-        "size": 0.18
+        "size": 0.275
     },
     "figsize": [
-        "0.23",
-        "0.23",
-        "0.08",
-        "0.08",
-        "0.08",
-        "0.08",
-        "0.08"
+        "0.33",
+        "0.33"
     ],
     "methods": [
         "border",
-        "border",
-        "crop",
-        "crop",
-        "crop",
-        "crop",
         "crop"
     ]
 }

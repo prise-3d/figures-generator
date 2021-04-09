@@ -83,10 +83,10 @@ def main():
 
             img_path = None
             # extract reference image path
-            if est == expected_reference:
-                img_path = os.path.join(scene_path, os.listdir(scene_path)[0])
-            else:
-                img_path = os.path.join(scene_path, [ img for img in os.listdir(scene_path) if extract_nsamples(img) == expected_samples ][0])
+            # if est == expected_reference:
+            #     img_path = os.path.join(scene_path, os.listdir(scene_path)[0])
+            # else:
+            img_path = os.path.join(scene_path, [ img for img in os.listdir(scene_path) if extract_nsamples(img) == expected_samples ][0])
             
             comparisons_data[scene][e_i]['real_path'] = img_path
 
@@ -117,75 +117,84 @@ def main():
         for e_i, est in enumerate(expected_estimators):
 
             current_data = comparisons_data[scene][e_i]['cropped_data']
-            method = expected_methods[e_i]
             
+            method_obj = {
+                'border': None,
+                'crop': None
+            }
+
             # create border image data
-            if method == 'border':
 
-                border_data = current_data.copy()
+            border_data = current_data.copy()
 
-                for i, p in enumerate(scene_config['crops']):
-                    
-                    
-                    p1 = list(map(int, p))
-                    p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
+            for i, p in enumerate(scene_config['crops']):
+                
+                
+                p1 = list(map(int, p))
+                p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
 
-                    border_data = add_border(border_data, p1, p2, scene_config['colors'][i], 3)
+                border_data = add_border(border_data, p1, p2, scene_config['colors'][i], 3)
 
-                # save border data image
+            # save border data image
+            output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
+            Image.fromarray(border_data).save(output_img)
+
+            border_obj = { 
+                'img_data': current_data,
+                'color_data': border_data,
+                'img_path': output_img,
+                'metric': None
+            }
+
+            # create cropped image data with border or not
+            crops_obj = {}
+
+            border_size = scene_config['border_size']
+            for i, p in enumerate(scene_config['crops']):
+                
+                crop_data = current_data.copy()
+
+                p1 = list(map(int, p))
+                p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
+
+                crop_data = extract_zone(crop_data, p1, p2)
+
+
+
+                opposite_point_reduced = opposite - border_size, opposite - border_size
+                color_data = add_border(crop_data, (0, 0), opposite_point_reduced, scene_config['colors'][i], border_size)
+
+                # save color data image
                 output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
-                Image.fromarray(border_data).save(output_img)
+                Image.fromarray(color_data).save(output_img)
 
-                method_obj = { 
-                    'img_data': current_data,
-                    'color_data': border_data,
+                crop_obj = {
+                    'img_data': crop_data,
+                    'color_data': color_data,
                     'img_path': output_img,
                     'metric': None
                 }
 
-            # create cropped image data with border or not
-            if method == 'crop':
+                crops_obj[i] = crop_obj
 
-                method_obj = {}
-
-                for i, p in enumerate(scene_config['crops']):
-                    
-                    crop_data = current_data.copy()
-
-                    p1 = list(map(int, p))
-                    p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
-
-                    crop_data = extract_zone(crop_data, p1, p2)
-
-                    opposite_point_reduced = opposite - 3, opposite - 3
-                    color_data = add_border(crop_data, (0, 0), opposite_point_reduced, scene_config['colors'][i], 3)
-
-                    # save color data image
-                    output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
-                    Image.fromarray(color_data).save(output_img)
-
-                    crop_obj = {
-                        'img_data': crop_data,
-                        'color_data': color_data,
-                        'img_path': output_img,
-                        'metric': None
-                    }
-
-                    method_obj[i] = crop_obj
+            method_obj = {
+                'border': border_obj,
+                'crop': crops_obj
+            }
 
             # build reference data (TODO : improve)
-            if expected_reference == est and scene not in references_data:
-                references_data[scene] = {}
+            # if expected_reference == est and scene not in references_data:
+            #     references_data[scene] = {}
 
-            if expected_reference == est and method not in references_data[scene]:
-                references_data[scene][method] = method_obj
+            # if expected_reference == est and method not in references_data[scene]:
+            #     references_data[scene][method] = method_obj
 
             # add method obj inside estimator data
             comparisons_data[scene][e_i]['method'] = method_obj
                     
     # 3. Compare border and cropped images with metrics
-    print(f'3. Comparison of all estimators to {expected_reference} using {expected_metric}')
-    
+    #print(f'3. Comparison of all estimators to {expected_reference} using {expected_metric}')
+    """
     for scene in expected_scenes:
         
         scene_config = expected_scenes_config[scene]
@@ -211,7 +220,7 @@ def main():
 
                     metric = compare_image(expected_metric, ref, current)
                     method_object[i]['metric'] = metric
-
+    """
 
     # 4. Create expected output LaTeX figure using specific images path
     output_filename = os.path.join(p_output, 'output.tex')
@@ -228,7 +237,7 @@ def main():
 
         if e_i < len(expected_displays) - 1:
             f.write(f'~\n')
-        
+    
     f.write(f'\n~\n')
     f.write(f'\\vspace{{0.5mm}}\\hrulefill\n\n')
 
@@ -239,47 +248,51 @@ def main():
 
         f.write(f'%{scene}\n')
 
-        right_part = False
+        for e_i, est in enumerate(expected_estimators):
+
+            method_object = comparisons_data[scene][e_i]['method']
+    
+            f.write(f'\\begin{{subfigure}}[b]{{{expected_figsize[e_i]}\\textwidth}}\n')
+            f.write(f'\t\\centering\n')
+            f.write(f'\t\\includegraphics[width=\\textwidth]{{{method_object["border"]["img_path"]}}}\n')
+            #f.write(f'\t\\vspace{{0.8mm}}\n')
+            #f.write(f'\t\\footnotesize{{\\textbf{{{expected_metric.upper()}:}} {method_object["metric"]:.4f}}}\n')
+            f.write(f'\\end{{subfigure}}\n')
+
         cumul_img_text = {}
         cumul_metric_text = {}
+
+        # \hspace{-4mm}
+        # \begin{minipage}[b]{0.02\textwidth}
+        #     \centering
+        #     \rotatebox{90}{
+        #         \begin{tabular}{ c | c }
+        #         \vspace{-10mm}\hspace{2mm}Mean\hspace{2mm} & \hspace{2mm}$G$-MoN
+        #         \end{tabular}}
+        # \end{minipage}
         
+        f.write(f'\\begin{{subfigure}}[b]{{{expected_right_part_width}\\textwidth}}\n')
+        f.write(f'\t\\centering\n')
+
         for e_i, est in enumerate(expected_estimators):
-            
-            method = expected_methods[e_i]
 
             method_object = comparisons_data[scene][e_i]['method']
 
-            if method == expected_right_part_detect and right_part == False:
-                right_part = True
-                f.write(f'\\begin{{subfigure}}[b]{{{expected_right_part_width}\\textwidth}}\n')
-                f.write(f'\t\\centering\n')
+            for i, p in enumerate(scene_config['crops']):
 
-            if method == 'border':
-                f.write(f'\\begin{{subfigure}}[b]{{{expected_figsize[e_i]}\\textwidth}}\n')
-                f.write(f'\t\\centering\n')
-                f.write(f'\t\\includegraphics[width=\\textwidth]{{{method_object["img_path"]}}}\n')
-                f.write(f'\t\\vspace{{0.8mm}}\n')
-                f.write(f'\t\\footnotesize{{\\textbf{{{expected_metric.upper()}:}} {method_object["metric"]:.4f}}}\n')
-                f.write(f'\\end{{subfigure}}\n')
+                if e_i not in cumul_img_text:
+                    cumul_img_text[e_i] = ''
 
-            # here default crop part
-            if method == expected_right_part_detect:
+                if e_i not in cumul_metric_text:
+                    cumul_metric_text[e_i] = ''
 
-                for i, p in enumerate(scene_config['crops']):
-
-                    if i not in cumul_img_text:
-                        cumul_img_text[i] = ''
-
-                    if i not in cumul_metric_text:
-                        cumul_metric_text[i] = ''
-
-                    cumul_img_text[i] += f'\t\\vspace{{0.15mm}}\\includegraphics[width={expected_right_part_size}\\textwidth]{{{method_object[i]["img_path"]}}}\n'
-                    
-                    cumul_metric_text[i] += f'\t\\begin{{minipage}}{{{expected_right_part_size}\\textwidth}}\n'
-                    cumul_metric_text[i] += f'\t\t\\centering\n'
-                    cumul_metric_text[i] += f'\t\t\\vspace{{-1.2mm}}\n'
-                    cumul_metric_text[i] += f'\t\t\\scriptsize{{\\textbf{{{expected_metric.upper()}:}} {method_object[i]["metric"]:.4f}}}\n'
-                    cumul_metric_text[i] += f'\t\\end{{minipage}}\n'
+                cumul_img_text[e_i] += f'\t\\includegraphics[width={expected_right_part_size}\\textwidth]{{{method_object["crop"][i]["img_path"]}}}\n'
+                
+                # cumul_metric_text[e_i] += f'\t\\begin{{minipage}}{{{expected_right_part_size}\\textwidth}}\n'
+                # cumul_metric_text[e_i] += f'\t\t\\centering\n'
+                # cumul_metric_text[e_i] += f'\t\t\\vspace{{-1.2mm}}\n'
+                # cumul_metric_text[e_i] += f'\t\t\\scriptsize{{\\textbf{{{expected_metric.upper()}:}} {method_object[i]["metric"]:.4f}}}\n'
+                # cumul_metric_text[e_i] += f'\t\\end{{minipage}}\n'
 
         # now we write right part of figure
         for i, k in enumerate(cumul_img_text):
