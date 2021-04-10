@@ -6,12 +6,12 @@ import numpy as np
 
 M = [5, 11, 15, 21, 25]
 scenes = ['p3d_bidir', 'p3d_contemporary-bathroom', 'p3d_crown', 'p3d_villa-lights-on']
-scenes_label = ['bidir', 'bathroom', 'crown', 'villa']
+scenes_label = ['Bidir', 'Bathroom', 'Crown', 'Villa']
 
 
-labels = [r'$G$-MON$_b$', r'$D$-MON', r'$G$-MON', r'$D$-MON$_p$', r'$G$-MON$_p$', r'Mean', r'MON']
+labels = [r'$G$-MON$_b$', r'$G$-MON', r'$GG$-MON', r'$D$-MON$_p$', r'$G$-MON$_p$', r'Mean', r'MON']
 row_labels = ['gini-binary-mon', 'gini-dmon', 'gini-mon', 'gini-partial-dmon', 'gini-partial-mon', 'mean', 'mon']
-order = [5, 6, 2, 0, 1]
+order = [5, 6, 0, 1]
 
 def main():
 
@@ -111,7 +111,7 @@ def main():
 
             if counter == 0:
                 f.write('\\hline\n')
-                line += f"\\multirow{{{len(order)}}}*{{$M = {m}$}} & "
+                line += f"\\multirow{{{len(order)}}}*{{\\rotatebox{{90}}{{$M = {m}$}}}} & "
             else:
                 line += " & "
             

@@ -1,6 +1,6 @@
 {
     "reference": "reference",
-    "nsamples": "50000",
+    "nsamples": "10000",
     "metric": "ssim",
     "estimators": [
         "comparisons-M21-gini-dmon",
@@ -12,12 +12,12 @@
         "reference"
     ],
     "displays": [
-        "$D$-MON",
+        "$G$-MoN",
         "Reference",
         "Mean",
-        "MON",
-        "$G$-MON$_b$",
-        "$D$-MON",
+        "MoN",
+        "$G$-MoN$_b$",
+        "$G$-MoN",
         "Reference"
     ],
     "labels": [
@@ -33,7 +33,7 @@
     "scenes": {
         "p3d_bidir": { 
             "crops": [
-                [438, 400],
+                [390, 450],
                 [300, 200]
             ], 
             "colors": [
@@ -41,19 +41,21 @@
                 "yellow"
             ],
             "opposite": 80,
+            "border_size": 3,
             "resize": [800, 800],
             "center": [400, 400]
         },
         "p3d_contemporary-bathroom": { 
             "crops": [
-                [50, 800],
-                [200, 500]
+                [660, 680],
+                [500, 100]
             ], 
             "colors": [
                 "lightblue",
-                "yellow"
+                "red"
             ],
             "opposite": 120,
+            "border_size": 4,
             "resize": [1200, 1200],
             "center": [600, 600]
         },
@@ -85,18 +87,18 @@
         }
     },
     "rightpart": {
-        "width": 0.52,
+        "width": 0.54,
         "detect": "crop",
-        "size": 0.18
+        "size": 0.183
     },
     "figsize": [
-        "0.23",
-        "0.23",
-        "0.08",
-        "0.08",
-        "0.08",
-        "0.08",
-        "0.08"
+        "0.22",
+        "0.22",
+        "0.093",
+        "0.093",
+        "0.093",
+        "0.093",
+        "0.093"
     ],
     "methods": [
         "border",

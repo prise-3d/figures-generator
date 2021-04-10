@@ -109,6 +109,7 @@ def main():
         print(f'-- Process methods for scene `{scene}`')
         
         scene_config = expected_scenes_config[scene]
+        border_size = scene_config['border_size']
 
         # get opposite point
         opposite = scene_config['opposite']
@@ -130,7 +131,7 @@ def main():
                     p1 = list(map(int, p))
                     p2 = list(map(int, tuple(map(operator.add, p, opposite_point))))
 
-                    border_data = add_border(border_data, p1, p2, scene_config['colors'][i], 3)
+                    border_data = add_border(border_data, p1, p2, scene_config['colors'][i], border_size)
 
                 # save border data image
                 output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
@@ -157,8 +158,8 @@ def main():
 
                     crop_data = extract_zone(crop_data, p1, p2)
 
-                    opposite_point_reduced = opposite - 3, opposite - 3
-                    color_data = add_border(crop_data, (0, 0), opposite_point_reduced, scene_config['colors'][i], 3)
+                    opposite_point_reduced = opposite - border_size, opposite - border_size
+                    color_data = add_border(crop_data, (0, 0), opposite_point_reduced, scene_config['colors'][i], border_size)
 
                     # save color data image
                     output_img = os.path.join(images_folder, str(uuid.uuid4()) + '.png')
@@ -233,7 +234,7 @@ def main():
     f.write(f'\\vspace{{0.5mm}}\\hrulefill\n\n')
 
     # 4.2: Prepare data depending of border or crop for each scene and estimator
-    for scene in expected_scenes:
+    for s_i, scene in enumerate(expected_scenes):
 
         scene_config = expected_scenes_config[scene]
 
@@ -243,6 +244,9 @@ def main():
         cumul_img_text = {}
         cumul_metric_text = {}
         
+        if s_i > 0:
+            f.write(f'\\vspace{{2mm}}\n\n')
+
         for e_i, est in enumerate(expected_estimators):
             
             method = expected_methods[e_i]
@@ -258,7 +262,7 @@ def main():
                 f.write(f'\\begin{{subfigure}}[b]{{{expected_figsize[e_i]}\\textwidth}}\n')
                 f.write(f'\t\\centering\n')
                 f.write(f'\t\\includegraphics[width=\\textwidth]{{{method_object["img_path"]}}}\n')
-                f.write(f'\t\\vspace{{0.8mm}}\n')
+                #f.write(f'\t\\vspace{{-0.8mm}}\n')
                 f.write(f'\t\\footnotesize{{\\textbf{{{expected_metric.upper()}:}} {method_object["metric"]:.4f}}}\n')
                 f.write(f'\\end{{subfigure}}\n')
 
@@ -273,13 +277,15 @@ def main():
                     if i not in cumul_metric_text:
                         cumul_metric_text[i] = ''
 
-                    cumul_img_text[i] += f'\t\\vspace{{0.15mm}}\\includegraphics[width={expected_right_part_size}\\textwidth]{{{method_object[i]["img_path"]}}}\n'
+                    #cumul_img_text[i] += f'\t\\vspace{{0.15mm}}\\includegraphics[width={expected_right_part_size}\\textwidth]{{{method_object[i]["img_path"]}}}\n'
+                    cumul_img_text[i] += f'\t\\includegraphics[width={expected_right_part_size}\\textwidth]{{{method_object[i]["img_path"]}}}\n'
                     
-                    cumul_metric_text[i] += f'\t\\begin{{minipage}}{{{expected_right_part_size}\\textwidth}}\n'
+                    cumul_metric_text[i] += f'\t\\begin{{subfigure}}{{{expected_right_part_size}\\textwidth}}\n'
                     cumul_metric_text[i] += f'\t\t\\centering\n'
-                    cumul_metric_text[i] += f'\t\t\\vspace{{-1.2mm}}\n'
-                    cumul_metric_text[i] += f'\t\t\\scriptsize{{\\textbf{{{expected_metric.upper()}:}} {method_object[i]["metric"]:.4f}}}\n'
-                    cumul_metric_text[i] += f'\t\\end{{minipage}}\n'
+                    cumul_metric_text[i] += f'\t\t\\vspace{{-2.5mm}}\n'
+                    #cumul_metric_text[i] += f'\t\t\\scriptsize{{\\textbf{{{expected_metric.upper()}:}} {method_object[i]["metric"]:.4f}}}\n'
+                    cumul_metric_text[i] += f'\t\t\\scriptsize{{{method_object[i]["metric"]:.4f}}}\n'
+                    cumul_metric_text[i] += f'\t\\end{{subfigure}}\n'
 
         # now we write right part of figure
         for i, k in enumerate(cumul_img_text):
@@ -288,7 +294,7 @@ def main():
             f.write(cumul_metric_text[k])
 
             if i < len(cumul_metric_text.keys()) - 1:
-                f.write('\t\\\\[2mm]\n')
+                f.write('\t\\\\[-1.2mm]\n')
 
         # 4.3 end figure
         f.write(f'\\end{{subfigure}}\n\n')
