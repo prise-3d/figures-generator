@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error as mse
+from skimage.metrics import normalized_root_mse as nrmse
 
 def write_progress(progress):
     '''
@@ -42,6 +43,9 @@ def compare_image(metric, ref, image):
     if metric == 'rmse':
         error = rmse(image, ref)
 
+    if metric == 'nrmse':
+        error = nrmse(image, ref)
+
     return error
 
 def main():
@@ -50,7 +54,7 @@ def main():
 
     parser.add_argument('--estimators', type=str, help="folder with all estimators", required=True)
     parser.add_argument('--reference', type=str, help="reference folder with scenes", required=True)
-    parser.add_argument('--metric', type=str, help="metric choice to use", choices=['ssim', 'rmse'], required=True)
+    parser.add_argument('--metric', type=str, help="metric choice to use", choices=['ssim', 'rmse', 'nrmse'], required=True)
     parser.add_argument('--output', type=str, help="output data file", required=True)
 
     args = parser.parse_args()

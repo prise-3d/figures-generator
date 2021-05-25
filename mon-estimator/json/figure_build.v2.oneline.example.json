@@ -61,8 +61,8 @@
         },
         "p3d_villa-lights-on": { 
             "crops": [
-                [320, 220],
-                [500, 350],
+                [320, 240],
+                [400, 80],
                 [550, 30]
             ], 
             "colors": [
@@ -71,7 +71,7 @@
                 "red"
             ],
             "border_size": 2,
-            "opposite": 80,
+            "opposite": 60,
             "resize": [750, 444],
             "center": [500, 222]
         }

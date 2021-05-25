@@ -30,6 +30,12 @@ def get_color(color):
     if color == 'green':
         return np.array([0, 255, 0])
 
+    if color == 'lightgreen':   
+        return np.array([46, 184, 46])
+
+    if color == 'lightyellow': 
+        return np.array([255, 255, 153])
+
     if color == 'blue':
         return np.array([0, 0, 255])
     

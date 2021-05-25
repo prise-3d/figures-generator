@@ -9,9 +9,9 @@ scenes = ['p3d_bidir', 'p3d_contemporary-bathroom', 'p3d_crown', 'p3d_villa-ligh
 scenes_label = ['Bidir', 'Bathroom', 'Crown', 'Villa']
 
 
-labels = [r'$G$-MON$_b$', r'$G$-MON', r'$GG$-MON', r'$D$-MON$_p$', r'$G$-MON$_p$', r'Mean', r'MON']
-row_labels = ['gini-binary-mon', 'gini-dmon', 'gini-mon', 'gini-partial-dmon', 'gini-partial-mon', 'mean', 'mon']
-order = [5, 6, 0, 1]
+labels = [r'Jung et al.', r'$G$-MoN$_b$', r'$G$-MoN', r'$GG$-MoN', r'$D$-MoN$_p$', r'$G$-MoN$_p$', r'Mean', r'MoN']
+row_labels = ['djung', 'gini-binary-mon', 'gini-dmon', 'gini-mon', 'gini-partial-dmon', 'gini-partial-mon', 'mean', 'mon']
+order = [6, 7, 0, 1, 2]
 
 def main():
 

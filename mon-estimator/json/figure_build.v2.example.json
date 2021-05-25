@@ -7,6 +7,7 @@
         "reference",
         "comparisons-M21-mean",
         "comparisons-M21-mon",
+        "comparisons-M5-djung",
 	    "comparisons-M21-gini-binary-mon",
 	    "comparisons-M21-gini-dmon",
         "reference"
@@ -16,6 +17,7 @@
         "Reference",
         "Mean",
         "MoN",
+        "Jung et al.",
         "$G$-MoN$_b$",
         "$G$-MoN",
         "Reference"
@@ -87,22 +89,24 @@
         }
     },
     "rightpart": {
-        "width": 0.54,
+        "width": 0.55,
         "detect": "crop",
-        "size": 0.183
+        "size": 0.154
     },
     "figsize": [
-        "0.22",
-        "0.22",
-        "0.093",
-        "0.093",
-        "0.093",
-        "0.093",
-        "0.093"
+        "0.19",
+        "0.19",
+        "0.083",
+        "0.083",
+        "0.083",
+        "0.083",
+        "0.083",
+        "0.083"
     ],
     "methods": [
         "border",
         "border",
+        "crop",
         "crop",
         "crop",
         "crop",

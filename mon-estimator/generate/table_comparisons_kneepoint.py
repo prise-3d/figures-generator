@@ -11,9 +11,10 @@ scenes = ['p3d_bidir', 'p3d_contemporary-bathroom', 'p3d_crown', 'p3d_villa-ligh
 scenes_label = ['Bidir', 'Bathroom', 'Crown', 'Villa']
 
 
-labels = [r'$G$-MON$_b$', r'$G$-MON', r'$GG$-MON', r'$D$-MON$_p$', r'$G$-MON$_p$', r'Mean', r'MON']
-row_labels = ['gini-binary-mon', 'gini-dmon', 'gini-mon', 'gini-partial-dmon', 'gini-partial-mon', 'mean', 'mon']
-order = [5, 6, 0, 1]
+labels = [r'Jung et al.', r'$G$-MoN$_b$', r'$G$-MoN', r'$GG$-MoN', r'$D$-MoN$_p$', r'$G$-MoN$_p$', r'Mean', r'MoN']
+row_labels = ['djung', 'gini-binary-mon', 'gini-dmon', 'gini-mon', 'gini-partial-dmon', 'gini-partial-mon', 'mean', 'mon']
+order = [6, 7, 0, 1, 2]
+mean_index = 6
 
 def main():
 
@@ -60,6 +61,8 @@ def main():
     f.write(first_header_line)
     f.write('\\hline\n')
     f.write(second_header_line)
+
+    prevous_m_mean = None
 
     # display for each M and estimator a specific line
     for m in M:
@@ -112,6 +115,10 @@ def main():
 
                     scene_spp_kneepoints[i][scene].append(spp_index)
 
+        # set constant mean values
+        if prevous_m_mean is None:
+            prevous_m_mean = scene_spp_kneepoints[mean_index]
+
         # get max expected value
 
         # write lines
@@ -137,8 +144,11 @@ def main():
                     values = []
 
                     for i in order:
-                         
-                        current_v = scene_spp_kneepoints[i][scene][k_i]
+                        
+                        if row_labels[i] == 'mean':
+                            current_v = prevous_m_mean[scene][k_i]
+                        else:
+                            current_v = scene_spp_kneepoints[i][scene][k_i]
 
                         if current_v == None:
                             current_v = 1000000
@@ -148,7 +158,11 @@ def main():
                     seq = sorted(values)
                     index = [seq.index(v) for v in values]
                     
-                    spp_text = scene_spp_kneepoints[key][scene][k_i]
+                    if row_labels[key] == 'mean':
+                        spp_text = prevous_m_mean[scene][k_i]
+                    else:
+                        spp_text = scene_spp_kneepoints[key][scene][k_i]
+                        
 
                     if spp_text == None:
                         line += f" & NR ({index[counter]+1})"

@@ -7,6 +7,7 @@ from PIL import Image
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error as mse
 from skimage.metrics import peak_signal_noise_ratio as psnr
+from skimage.metrics import normalized_root_mse as nrmse
 
 def rmse(image, ref):
     return np.sqrt(((image - ref) ** 2).mean())
@@ -79,6 +80,10 @@ def main():
 
             if metric == 'rmse':
                 sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, rmse(img_rgb_1, img_rgb_2))
+                output_file.write(sentence)
+            
+            if metric == 'nrmse':
+                sentence = "{0};{1};{2};{3}\n".format(scene_name, img, est, nrmse(img_rgb_1, img_rgb_2))
                 output_file.write(sentence)
 
             if metric == 'mse':
